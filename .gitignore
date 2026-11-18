@@ -4,6 +4,7 @@
 *.docx
 *.txt
 !CMakeLists.txt
+!doc/just.nvim.txt
 *.txt.user
 *.html
 *.jpg
@@ -24,3 +25,5 @@ build
 *.c
 *.v
 *.rs
+
+doc/tags

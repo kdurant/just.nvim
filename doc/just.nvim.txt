@@ -1,0 +1,92 @@
+*just.nvim* 在浮动窗口中浏览并运行 justfile 中的 recipe
+
+==============================================================================
+1. 简介                                                   *just.nvim-intro*
+
+just.nvim 从 git 根目录查找 justfile（也支持向上查找），用
+`just --dump --dump-format json` 解析出 recipe 列表，在浮动窗口中显示并执行。
+
+需要 Neovim 0.10 及以上版本，以及 just 可执行文件。
+
+==============================================================================
+2. 命令                                                     *just.nvim-commands*
+
+:Just           打开 recipe 选择窗口                       *:Just*
+:JustLog        查看上一次命令的终端输出                   *:JustLog*
+:JustClose      关闭选择窗口                              *:JustClose*
+
+Lua API:
+>
+    require('just').open()
+    require('just').openLog()
+    require('just').toggle()
+    require('just').close()
+<
+==============================================================================
+3. 按键                                                     *just.nvim-keys*
+
+默认按键：
+
+    <Up> / k        上一个 recipe
+    <Down> / j      下一个 recipe
+    <Enter>         执行
+    <Tab>           列表 / 参数输入行之间切换
+    <Esc>           关闭
+    <C-u>           清空参数
+
+所有按键都可以在 setup() 中通过 keys 配置为其他按键或字符串列表。
+
+==============================================================================
+4. 配置                                                   *just.nvim-setup*
+
+>
+    require('just').setup({
+        justfile = nil,          -- 显式指定 justfile
+        justArgs = {},           -- 传给 just 的全局选项
+        keys = {
+            up = { '<Up>', 'k' },
+            down = { '<Down>', 'j' },
+            run = { '<CR>' },
+            close = { '<Esc>', '<C-c>' },
+            toggleFocus = { '<Tab>' },
+            clearArgs = { '<C-u>' },
+        },
+        ui = {
+            border = 'rounded',
+            height = 15,
+            width = 0.6,
+            minWidth = 32,
+            maxWidth = 100,
+            position = 'center',
+            promptPrefix = '❯ ',
+            showParams = true,
+            showDoc = true,
+            winblend = 0,
+            zindex = 50,
+        },
+        run = {
+            height = 15,
+            notifyDuration = true,
+            cwd = nil,
+        },
+    })
+<
+参数输入行的内容会追加到 recipe 名之后，作为 recipe 参数传给 just。
+
+执行 recipe 时默认在底部打开终端窗口；运行期间通过 vim.notify 通知实时显示
+耗时（nvim-notify 会原地刷新），结束后通知总耗时。命令结束后终端窗口保持
+打开，按 `<Esc>` 关闭窗口，日志 buffer 仍保留；可随时用 |:JustLog| 或
+`require('just').openLog()` 重新打开运行中或最近一次命令的日志。设置
+`run.notifyDuration = false` 可关闭耗时通知。
+
+终端日志只保留最近一次命令的；运行新命令时，旧的隐藏日志 buffer 会被清理。
+
+==============================================================================
+5. 高亮组                                                 *just.nvim-highlights*
+
+JustNormal, JustBorder, JustTitle, JustSelection, JustMarker,
+JustRecipe, JustParams, JustDoc, JustPrompt
+
+都可以用 |nvim_set_hl()| 覆盖（建议在 ColorScheme 之后设置）。
+
+vim:tw=78:ts=8:et:sw=4:ft=help:norl:
